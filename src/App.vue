@@ -1,0 +1,89 @@
+<script setup>
+import { RouterLink, RouterView } from 'vue-router';
+import { ref } from 'vue';
+
+const isLoading = ref(false);
+</script>
+
+<template>
+    <div class="wrap">
+      <VueLoading v-model:active="isLoading"></VueLoading>
+      <nav>
+        <RouterLink to="/">庫存股</RouterLink>
+        <RouterLink to="/focus">關注股</RouterLink>
+      </nav>
+      <RouterView />
+    </div>
+
+</template>
+
+<style scoped>
+.wrap{
+  max-width: 1280px;
+  margin: 0 auto;
+}
+header {
+  line-height: 1.5;
+  max-height: 100vh;
+}
+
+.logo {
+  display: block;
+  margin: 0 auto 2rem;
+}
+
+nav {
+  width: 100%;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 48px;
+}
+
+nav a.router-link-exact-active {
+  color: var(--color-text);
+}
+
+nav a.router-link-exact-active:hover {
+  background-color: transparent;
+}
+
+nav a {
+  display: inline-block;
+  padding: 0 1rem;
+  border-left: 1px solid var(--color-border);
+}
+
+nav a:first-of-type {
+  border: 0;
+}
+
+@media (min-width: 1024px) {
+  header {
+    display: flex;
+    place-items: center;
+    padding-right: calc(var(--section-gap) / 2);
+  }
+
+  .logo {
+    margin: 0 2rem 0 0;
+  }
+
+  header .wrapper {
+    display: flex;
+    place-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  nav {
+    text-align: left;
+    margin-left: -1rem;
+    font-size: 1rem;
+
+    padding: 1rem 0;
+    margin-top: 1rem;
+  }
+}
+</style>
