@@ -131,6 +131,7 @@ export default {
     Loading,
   },
   setup() {
+    const { VITE_URL } = import.meta.env;
     const router = useRouter();
     const search = ref('');
     const counts = ref(1);
@@ -195,7 +196,7 @@ export default {
       );
       axios.defaults.headers.common.Authorization = token.value;
       axios
-        .post('http://127.0.0.1:3000/api/stock/getStoreStock')
+        .post(`${VITE_URL}api/stock/getStoreStock`)
         .then((res) => {
           store.value = res.data.resultArray;
           total.value = res.data.total;
@@ -226,7 +227,7 @@ export default {
         change: '',
       };
       axios
-        .post('http://127.0.0.1:3000/api/stock/addStock', data)
+        .post(`${VITE_URL}api/stock/addStock`, data)
         .then((res) => {
           console.log(res);
           getStoreStock();
@@ -255,7 +256,7 @@ export default {
       );
       axios.defaults.headers.common.Authorization = token.value;
       axios
-        .delete(`http://127.0.0.1:3000/api/stock/deleteStock?code=${code}`)
+        .delete(`${VITE_URL}api/stock/deleteStock?code=${code}`)
         .then((res) => {
           if (res.data.success) {
             getStoreStock();
@@ -272,7 +273,7 @@ export default {
       );
       axios.defaults.headers.common.Authorization = token.value;
       axios
-        .get(`http://127.0.0.1:3000/api/stock/stockDetail?code=${code}`)
+        .get(`${VITE_URL}api/stock/stockDetail?code=${code}`)
         .then((res) => {
           stock.value = res.data;
           codeDetail.value = code;
@@ -290,8 +291,9 @@ export default {
     // 取得所有個股資料
     function getStocks() {
       axios
-        .get('http://127.0.0.1:3000/api/stock/getStocks')
+        .get(`${VITE_URL}api/stock/getStocks`)
         .then((res) => {
+          console.log(res.data);
           stockData.value = res.data;
           isLoading.value = false;
         })

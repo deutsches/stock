@@ -10,6 +10,7 @@ export default {
     const stockModal = ref(null);
     const token = ref(null);
     const stocks = ref(props.stock);
+    const { VITE_URL } = import.meta.env;
     const openModal = () => {
       stockModal.value.show();
     };
@@ -20,7 +21,7 @@ export default {
       );
       axios.defaults.headers.common.Authorization = token.value;
       axios
-        .delete(`http://127.0.0.1:3000/api/stock/deleteSingleStock?uid=${uid}`)
+        .delete(`${VITE_URL}api/stock/deleteSingleStock?uid=${uid}`)
         .then((res) => {
           if (res.data.success) {
             emit('get-store-stock');

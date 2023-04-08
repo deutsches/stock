@@ -69,7 +69,7 @@ export default {
     const focusStock = ref([]);
     const token = ref('');
     const stockData = ref([]);
-
+    const { VITE_URL } = import.meta.env;
     const stocks = computed(() => {
       console.log(search.value);
       if (!search.value) {
@@ -93,7 +93,7 @@ export default {
       );
       axios.defaults.headers.common.Authorization = token.value;
       axios
-        .post('http://127.0.0.1:3000/api/focus/getfocusStock')
+        .post(`${VITE_URL}api/focus/getfocusStock`)
         .then((res) => {
           console.log(res.data);
           focusStock.value = res.data;
@@ -126,7 +126,7 @@ export default {
         change: '',
       };
       axios
-        .post('http://127.0.0.1:3000/api/focus/addStock', data)
+        .post(`${VITE_URL}api/focus/addStock`, data)
         .then((res) => {
           console.log(res);
         })
@@ -145,7 +145,7 @@ export default {
       // 取得所有個股資料
     function getStocks() {
       axios
-        .get('http://127.0.0.1:3000/api/stock/getStocks')
+        .get(`${VITE_URL}api/stock/getStocks`)
         .then((res) => {
           stockData.value = res.data;
         })
@@ -163,7 +163,7 @@ export default {
       );
       axios.defaults.headers.common.Authorization = token.value;
       axios
-        .post('http://127.0.0.1:3000/api/focus/updateFocusStockPrice')
+        .post(`${VITE_URL}api/focus/updateFocusStockPrice`)
         .then((res) => {
           console.log(res);
           focusStock.value = res.data;
@@ -181,7 +181,7 @@ export default {
       );
       axios.defaults.headers.common.Authorization = token.value;
       axios
-        .delete(`http://127.0.0.1:3000/api/focus/deleteStock?code=${code}`)
+        .delete(`${VITE_URL}api/focus/deleteStock?code=${code}`)
         .then((res) => {
           if (res.data.success) {
             getFocusStock();

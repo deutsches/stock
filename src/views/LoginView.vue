@@ -45,7 +45,6 @@ export default {
         .then((userCredential) => {
           // Signed in
           const { user } = userCredential;
-          console.log(user.uid, user.stsTokenManager.expirationTime);
           const { uid } = user;
           const { expirationTime } = user.stsTokenManager;
           document.cookie = `stockToken=${uid};expires=

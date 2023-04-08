@@ -22,7 +22,7 @@ export default {
     const email = ref('');
     const password = ref('');
     const router = useRouter();
-    // const route = useRoute();
+    const { VITE_URL } = import.meta.env;
 
     function register() {
       const data = {
@@ -30,7 +30,7 @@ export default {
         password: password.value,
       };
       axios
-        .post('http://127.0.0.1:3000/api/signup', data)
+        .post(`${VITE_URL}api/signup`, data)
         .then((res) => {
           if (res.data === 'success') {
             alert('您已註冊成功!');
@@ -49,7 +49,7 @@ export default {
         password: password.value,
       };
       axios
-        .post('http://127.0.0.1:3000/api/login', data)
+        .post(`${VITE_URL}api/login`, data)
         .then((res) => {
           if (res.data === 'success') {
             alert('登入成功!');

@@ -13,6 +13,7 @@ export default {
     RouterView,
   },
   setup() {
+    const { VITE_URL } = import.meta.env;
     const router = useRouter();
     const token = ref('');
     const checkAdmin = () => {
@@ -23,7 +24,7 @@ export default {
       // axios設定header
       axios.defaults.headers.common.Authorization = token.value;
       axios
-        .post('http://127.0.0.1:3000/api/users/check')
+        .post(`${VITE_URL}api/users/check`)
         .then((res) => {
           console.log(res);
           if (!res.data.success) {
