@@ -1,6 +1,9 @@
 <template>
+  <nav class="d-flex justify-content-center mt-4 mb-4">
+    <RouterLink to="/" class="me-4">庫存股</RouterLink>
+    <RouterLink to="/focus">關注股</RouterLink>
+  </nav>
   <RouterView />
-
 </template>
 
 <script>
@@ -46,5 +49,4 @@ export default {
     };
   },
 };
-
 </script>

@@ -1,17 +1,10 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router';
-import { ref } from 'vue';
 
-const isLoading = ref(false);
 </script>
 
 <template>
-    <div class="wrap">
-      <VueLoading v-model:active="isLoading"></VueLoading>
-      <nav>
-        <RouterLink to="/">庫存股</RouterLink>
-        <RouterLink to="/focus">關注股</RouterLink>
-      </nav>
+    <div class="">
       <RouterView />
     </div>
 

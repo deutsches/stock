@@ -30,7 +30,22 @@
           </button>
         </div>
       </div>
-      <table class="table mt-5 table-responsive" v-show="focusStock.length">
+      <div class="d-flex justify-content-around mt-3">
+        <div>
+          加權指數：{{ index?.tse?.deal }}
+          <span v-if=" (index?.tse?.updown*1)>0"><i class="bi bi-arrow-up"></i></span>
+          <span v-else><i class="bi bi-arrow-down"></i></span>
+          {{ index?.tse?.updown }}
+          ({{ index?.tse?.change }})
+        </div>
+        <div>櫃買指數：{{ index?.otc?.deal }}
+          <span v-if=" (index?.otc?.updown*1)>0"><i class="bi bi-arrow-up"></i></span>
+          <span v-else><i class="bi bi-arrow-down"></i></span>
+          {{ index?.otc?.updown }}
+          ({{ index?.otc?.change }})
+        </div>
+      </div>
+      <table class="table mt-4 table-responsive" v-show="focusStock.length">
         <thead>
           <tr>
             <td>名稱</td>
@@ -47,7 +62,7 @@
             <td>{{ stock.updown }}</td>
             <td>{{ stock.change }}</td>
             <td>
-              <button type="button" class="btn btn-danger" @click="deleteStock(stock.code)">
+              <button type="button" class="btn btn-outline-danger" @click="deleteStock(stock.code)">
                 刪除
               </button>
             </td>
@@ -61,6 +76,7 @@
 <script type="module">
 import { computed, onMounted, ref } from 'vue';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default {
   setup() {
@@ -70,6 +86,7 @@ export default {
     const token = ref('');
     const stockData = ref([]);
     const { VITE_URL } = import.meta.env;
+    const index = ref({});
     const stocks = computed(() => {
       console.log(search.value);
       if (!search.value) {
@@ -96,7 +113,8 @@ export default {
         .post(`${VITE_URL}api/focus/getfocusStock`)
         .then((res) => {
           console.log(res.data);
-          focusStock.value = res.data;
+          index.value = res.data.index;
+          focusStock.value = res.data.resultArray;
         })
         .catch((err) => {
           console.log(err);
@@ -114,7 +132,7 @@ export default {
       const code = stockData.value.filter(
         (item) => item.name.match(search.value) || item.code.match(search.value),
       );
-
+      console.log(code);
       const data = {
         code: code[0].code,
         name: code[0].name,
@@ -128,9 +146,13 @@ export default {
       axios
         .post(`${VITE_URL}api/focus/addStock`, data)
         .then((res) => {
+          Swal.fire({
+            title: '加入完成!',
+            icon: 'success',
+            showConfirmButton: false,
+            timer: 1500,
+          });
           console.log(res);
-        })
-        .then(() => {
           getFocusStock();
         })
         .catch((err) => {
@@ -180,16 +202,28 @@ export default {
         '$1',
       );
       axios.defaults.headers.common.Authorization = token.value;
-      axios
-        .delete(`${VITE_URL}api/focus/deleteStock?code=${code}`)
-        .then((res) => {
-          if (res.data.success) {
-            getFocusStock();
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      Swal.fire({
+        title: '確定要刪除嗎?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '確定',
+        cancelButtonText: '取消',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          axios
+            .delete(`${VITE_URL}api/focus/deleteStock?code=${code}`)
+            .then((res) => {
+              if (res.data.success) {
+                getFocusStock();
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+      });
     };
     // function clean() {
     //   search.value = `${search.value} `;
@@ -211,6 +245,7 @@ export default {
       getStocks,
       updateFocusStockPrice,
       deleteStock,
+      index,
     };
   },
 };

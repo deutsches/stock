@@ -2,6 +2,7 @@
 import Modal from 'bootstrap/js/dist/modal';
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default {
   props: ['stock', 'code'],
@@ -19,18 +20,30 @@ export default {
         /(?:(?:^|.*;\s*)stockToken\s*=\s*([^;]*).*$)|^.*$/,
         '$1',
       );
-      axios.defaults.headers.common.Authorization = token.value;
-      axios
-        .delete(`${VITE_URL}api/stock/deleteSingleStock?uid=${uid}`)
-        .then((res) => {
-          if (res.data.success) {
-            emit('get-store-stock');
-            emit('get-stock-detail', props.code);
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      Swal.fire({
+        title: '確定要刪除此細項嗎?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '確定',
+        cancelButtonText: '取消',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          axios.defaults.headers.common.Authorization = token.value;
+          axios
+            .delete(`${VITE_URL}api/stock/deleteSingleStock?uid=${uid}`)
+            .then((res) => {
+              if (res.data.success) {
+                emit('get-store-stock');
+                emit('get-stock-detail', props.code);
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+      });
     };
 
     onMounted(() => {
