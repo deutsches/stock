@@ -167,7 +167,7 @@ export default {
     const isLoading = ref(false);
     const index = ref({});
     const router = useRouter();
-
+    const timer = ref(null);
     const stocks = computed(() => {
       if (!search.value) {
         return '';
@@ -367,14 +367,14 @@ export default {
       getStoreStock();
       getStocks();
       isLoading.value = true;
-      setInterval(() => {
+      timer.value = setInterval(() => {
         // 每5秒鐘執行一次
         getStoreStock();
       }, 5000);
     });
 
-    onUnmounted (() => {
-      clearInterval(getStoreStock);
+    onUnmounted(() => {
+      clearInterval(timer.value);
     });
 
     return {

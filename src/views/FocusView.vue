@@ -89,6 +89,7 @@ import Swal from 'sweetalert2';
 
 export default {
   setup() {
+    const timer = ref(null);
     const search = ref('');
     const list = ref(null);
     const focusStock = ref([]);
@@ -217,13 +218,13 @@ export default {
     onMounted(() => {
       getStocks();
       getFocusStock();
-      setInterval(() => {
+      timer.value = setInterval(() => {
         // 每5秒鐘執行一次
         getFocusStock();
       }, 5000);
     });
     onUnmounted(() => {
-      clearInterval(getFocusStock);
+      clearInterval(timer.value);
     });
     return {
       search,
