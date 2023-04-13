@@ -27,7 +27,7 @@
               {{ stock.code + ' ' + stock.name }}
             </li>
           </ul>
-          <button type="button" class="ms-2 btn btn-outline-primary" @click="addStock">加入</button>
+          <button type="button" class="ms-2 btn btn-outline-success" @click="addStock">加入</button>
         </div>
         <div class="text-md-start text-lg-center mt-4">
           <label for="counts" class="d-inline"
@@ -57,22 +57,24 @@
         </div>
       </div>
       <div id="pie" class="mt-5" v-show="store.length"></div>
-      <div class="d-flex justify-content-around mt-3">
-        <div>
+      <div class="d-md-inline-block d-lg-flex justify-content-around mt-3">
+        <div class=" mb-2 mb-lg-0" :style="{'color':(index?.tse?.updown*1)>0? 'red':'green'}">
           加權指數：{{ index?.tse?.deal }}
           <span v-if=" (index?.tse?.updown*1)>0"><i class="bi bi-arrow-up"></i></span>
           <span v-else><i class="bi bi-arrow-down"></i></span>
           {{ index?.tse?.updown }}
           ({{ index?.tse?.change }})
         </div>
-        <div>櫃買指數：{{ index?.otc?.deal }}
+        <div class="mt" :style="{'color':(index?.otc?.updown*1)>0? 'red':'green'}">
+          櫃買指數：{{ index?.otc?.deal }}
           <span v-if=" (index?.otc?.updown*1)>0"><i class="bi bi-arrow-up"></i></span>
           <span v-else><i class="bi bi-arrow-down"></i></span>
           {{ index?.otc?.updown }}
           ({{ index?.otc?.change }})
         </div>
       </div>
-      <table class="table mt-4 table-responsive" v-show="store.length">
+      <div class=" table-responsive">
+        <table class="table mt-4" v-show="store.length">
         <thead>
           <tr>
             <td>名稱</td>
@@ -95,7 +97,7 @@
             </td>
             <td style="color:{{ stock.profit < 0 ? green : red }}">{{ stock.change }}</td>
             <td>
-              <button type="button" class="btn btn-outline-primary" @click="openDetail(stock.code)">
+              <button type="button" class="btn btn-outline-success" @click="openDetail(stock.code)">
                 明細
               </button>
               &nbsp;
@@ -118,6 +120,7 @@
           </tr>
         </tfoot>
       </table>
+      </div>
     </div>
   </main>
   <stockModal
@@ -130,14 +133,14 @@
 </template>
 
 <script type="module">
+import { useRouter } from 'vue-router';
 import Loading from 'vue-loading-overlay';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import {
-  computed, onMounted, ref, onBeforeUnmount, reactive,
+  computed, onMounted, ref, onBeforeUnmount,
 } from 'vue';
 import 'vue-loading-overlay/dist/css/index.css';
-import { useRouter } from 'vue-router';
 import stockModal from '../components/DetailComponent.vue';
 
 export default {
@@ -147,14 +150,12 @@ export default {
   },
   setup() {
     const { VITE_URL } = import.meta.env;
-    const router = useRouter();
     const search = ref('');
     const counts = ref(1);
     const price = ref(1);
     const isCheck = ref(false);
     const list = ref(null);
     const store = ref([]);
-    const stockModal = ref(null);
     const stock = ref([]);
     const btn = ref(null);
     const stockData = ref([]);
@@ -165,6 +166,7 @@ export default {
     const ROI = ref('');
     const isLoading = ref(false);
     const index = ref({});
+    const router = useRouter();
     // const searchListStyle = reactive({
     //   'd-none': true,
     //   'position-absolute': false,
@@ -192,7 +194,6 @@ export default {
     });
     function inputValue(code) {
       search.value = `${code.code}`;
-      console.log(searchListStyle);
       searchListStyle.value['position-absolute'] = false;
       searchListStyle.value['d-none'] = true;
     }
@@ -218,7 +219,6 @@ export default {
       axios
         .post(`${VITE_URL}api/stock/getStoreStock`)
         .then((res) => {
-          console.log(res);
           if (res.data.resultArray.length !== 0) {
             store.value = res.data.resultArray;
             total.value = res.data.total;
@@ -304,7 +304,13 @@ export default {
             .delete(`${VITE_URL}api/stock/deleteStock?code=${code}`)
             .then((res) => {
               if (res.data.success) {
-                Swal.fire('已刪除完成!', '', 'success');
+                Swal.fire({
+                  title: '已刪除完成!',
+                  icon: 'success',
+                  showConfirmButton: false,
+                  timer: 1500,
+                });
+                // Swal.fire('已刪除完成!', '', 'success');
                 getStoreStock();
               }
             })
@@ -352,26 +358,23 @@ export default {
         });
     }
 
-    // 登出
-    const logout = () => {
-      document.cookie = 'stockToken=;expires=;';
-    };
-
     // 千分位
     function moneyFormat(money) {
       return money.replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ',');
     }
 
+    function logout() {
+      document.cookie = 'stockToken=;expires=;';
+      router.push('/login');
+    }
     onMounted(() => {
       getStoreStock();
       getStocks();
       isLoading.value = true;
-      // console.log(stockModal.value);
-      // console.log(btn.value);
-      // setInterval(() => {
-      //   // 每5秒鐘執行一次
-      //   getStoreStock();
-      // }, 5000);
+      setInterval(() => {
+        // 每5秒鐘執行一次
+        getStoreStock();
+      }, 5000);
     });
 
     onBeforeUnmount(() => {
@@ -441,6 +444,11 @@ export default {
   }
   .searchList {
     left: 3%;
+  }
+}
+@media (max-width: 767px) {
+  .table{
+    width: 600px !important;
   }
 }
 </style>

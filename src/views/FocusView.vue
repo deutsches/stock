@@ -2,7 +2,7 @@
   <main>
     <div class="container">
       <div class="row">
-        <div class=" position-relative text-center">
+        <div class="position-relative text-center">
           <input
             type="search"
             id="stock_code"
@@ -11,8 +11,10 @@
             placeholder="請輸入股票代號或是股票名稱"
             class="input_stock p-2"
           />
-          <ul class="list-unstyled searchList "
-          :class="{ 'd-none':!stocks.length, 'position-absolute':stocks.length}">
+          <ul
+            class="list-unstyled searchList"
+            :class="{ 'd-none': !stocks.length, 'position-absolute': stocks.length }"
+          >
             <li
               v-for="stock in stocks"
               :key="stock.code"
@@ -25,56 +27,63 @@
               {{ stock.code + ' ' + stock.name }}
             </li>
           </ul>
-          <button type="button" class="ms-2 btn btn-outline-primary" @click="addStock">
-            加入
-          </button>
+          <button type="button" class="ms-2 btn btn-outline-success" @click="addStock">加入</button>
         </div>
       </div>
-      <div class="d-flex justify-content-around mt-3">
-        <div>
+      <div class="d-md-inline-block d-lg-flex justify-content-around mt-3">
+        <div class="mb-2 mb-lg-0" :style="{'color':(index?.tse?.updown*1)>0? 'red':'green'}">
           加權指數：{{ index?.tse?.deal }}
-          <span v-if=" (index?.tse?.updown*1)>0"><i class="bi bi-arrow-up"></i></span>
+          <span v-if="index?.tse?.updown * 1 > 0"><i class="bi bi-arrow-up"></i></span>
           <span v-else><i class="bi bi-arrow-down"></i></span>
           {{ index?.tse?.updown }}
           ({{ index?.tse?.change }})
         </div>
-        <div>櫃買指數：{{ index?.otc?.deal }}
-          <span v-if=" (index?.otc?.updown*1)>0"><i class="bi bi-arrow-up"></i></span>
+        <div :style="{'color':(index?.otc?.updown*1)>0? 'red':'green'}">
+          櫃買指數：{{ index?.otc?.deal }}
+          <span v-if="index?.otc?.updown * 1 > 0"><i class="bi bi-arrow-up"></i></span>
           <span v-else><i class="bi bi-arrow-down"></i></span>
           {{ index?.otc?.updown }}
           ({{ index?.otc?.change }})
         </div>
       </div>
-      <table class="table mt-4 table-responsive" v-show="focusStock.length">
-        <thead>
-          <tr>
-            <td>名稱</td>
-            <td>現價</td>
-            <td>漲跌</td>
-            <td>幅度</td>
-            <td></td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="stock in focusStock" :key="stock.code">
-            <td>{{ stock.name }}</td>
-            <td>{{ stock.dealPrice  }}</td>
-            <td>{{ stock.updown }}</td>
-            <td>{{ stock.change }}</td>
-            <td>
-              <button type="button" class="btn btn-outline-danger" @click="deleteStock(stock.code)">
-                刪除
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table mt-4" v-show="focusStock.length">
+          <thead>
+            <tr>
+              <td>名稱</td>
+              <td>現價</td>
+              <td>漲跌</td>
+              <td>幅度</td>
+              <td></td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="stock in focusStock" :key="stock.code">
+              <td>{{ stock.name }}</td>
+              <td>{{ stock.dealPrice }}</td>
+              <td>{{ stock.updown }}</td>
+              <td>{{ stock.change }}</td>
+              <td>
+                <button
+                  type="button"
+                  class="btn btn-outline-danger"
+                  @click="deleteStock(stock.code)"
+                >
+                  刪除
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </main>
 </template>
 
 <script type="module">
-import { computed, onMounted, ref } from 'vue';
+import {
+  computed, onMounted, ref, onBeforeUnmount,
+} from 'vue';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
@@ -112,13 +121,11 @@ export default {
       axios
         .post(`${VITE_URL}api/focus/getfocusStock`)
         .then((res) => {
-          console.log(res.data);
           index.value = res.data.index;
           focusStock.value = res.data.resultArray;
         })
         .catch((err) => {
-          console.log(err);
-          // alert(err.data);
+          alert(err.data);
         });
     }
 
@@ -132,7 +139,6 @@ export default {
       const code = stockData.value.filter(
         (item) => item.name.match(search.value) || item.code.match(search.value),
       );
-      console.log(code);
       const data = {
         code: code[0].code,
         name: code[0].name,
@@ -146,25 +152,23 @@ export default {
       axios
         .post(`${VITE_URL}api/focus/addStock`, data)
         .then((res) => {
-          Swal.fire({
-            title: '加入完成!',
-            icon: 'success',
-            showConfirmButton: false,
-            timer: 1500,
-          });
-          console.log(res);
-          getFocusStock();
+          if (res.success) {
+            Swal.fire({
+              title: '加入完成!',
+              icon: 'success',
+              showConfirmButton: false,
+              timer: 1500,
+            });
+            getFocusStock();
+          }
         })
         .catch((err) => {
           console.log(err);
-          // alert(err.data);
-          // router.push('/login');
         });
-
-      // store.value.push(data);
       search.value = '';
     };
-      // 取得所有個股資料
+
+    // 取得所有個股資料
     function getStocks() {
       axios
         .get(`${VITE_URL}api/stock/getStocks`)
@@ -173,27 +177,6 @@ export default {
         })
         .catch((err) => {
           console.log(err);
-          // alert(err.data);
-          // router.push('/login');
-        });
-    }
-    // 更新現價
-    function updateFocusStockPrice() {
-      token.value = document.cookie.replace(
-        /(?:(?:^|.*;\s*)stockToken\s*=\s*([^;]*).*$)|^.*$/,
-        '$1',
-      );
-      axios.defaults.headers.common.Authorization = token.value;
-      axios
-        .post(`${VITE_URL}api/focus/updateFocusStockPrice`)
-        .then((res) => {
-          console.log(res);
-          focusStock.value = res.data;
-          getFocusStock();
-        })
-        .catch((err) => {
-          console.log(err);
-          // alert(err.data);
         });
     }
     const deleteStock = (code) => {
@@ -216,6 +199,12 @@ export default {
             .delete(`${VITE_URL}api/focus/deleteStock?code=${code}`)
             .then((res) => {
               if (res.data.success) {
+                Swal.fire({
+                  title: '已刪除完成!',
+                  icon: 'success',
+                  showConfirmButton: false,
+                  timer: 1500,
+                });
                 getFocusStock();
               }
             })
@@ -225,15 +214,17 @@ export default {
         }
       });
     };
-    // function clean() {
-    //   search.value = `${search.value} `;
-    //   stocks.value.length = 0;
-    // }
     onMounted(() => {
       getStocks();
       getFocusStock();
+      setInterval(() => {
+        // 每5秒鐘執行一次
+        getFocusStock();
+      }, 5000);
     });
-
+    onBeforeUnmount(() => {
+      clearInterval(getFocusStock);
+    });
     return {
       search,
       stocks,
@@ -243,7 +234,6 @@ export default {
       focusStock,
       getFocusStock,
       getStocks,
-      updateFocusStockPrice,
       deleteStock,
       index,
     };
@@ -271,7 +261,7 @@ export default {
   .input_stock {
     width: 75%;
   }
-  .searchList{
+  .searchList {
     left: 5%;
   }
 }

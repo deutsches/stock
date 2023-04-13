@@ -1,7 +1,8 @@
 <template>
   <nav class="d-flex justify-content-center mt-4 mb-4">
     <RouterLink to="/" class="me-4">庫存股</RouterLink>
-    <RouterLink to="/focus">關注股</RouterLink>
+    <RouterLink to="/focus"  class="me-4">關注股</RouterLink>
+    <a href="#" @click.prevent="logout">登出</a>
   </nav>
   <RouterView />
 </template>
@@ -10,6 +11,7 @@
 import { RouterView, useRouter } from 'vue-router';
 import { onMounted, ref } from 'vue';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default {
   components: {
@@ -29,9 +31,13 @@ export default {
       axios
         .post(`${VITE_URL}api/users/check`)
         .then((res) => {
-          console.log(res);
           if (!res.data.success) {
-            alert('您尚未登入，請先登入!');
+            Swal.fire({
+              icon: 'success',
+              title: '您尚未登入，請先登入!',
+              showConfirmButton: true,
+              timer: 2000,
+            });
             router.push('/login');
           }
         })
@@ -41,11 +47,17 @@ export default {
           router.push('/login');
         });
     };
+    // 登出
+    const logout = () => {
+      document.cookie = 'stockToken=;expires=;';
+      router.push('/login');
+    };
     onMounted(() => {
       checkAdmin();
     });
     return {
       checkAdmin,
+      logout,
     };
   },
 };

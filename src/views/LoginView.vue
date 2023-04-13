@@ -1,18 +1,19 @@
 <template>
-  <div class="login_body" :style="{ backgroundColor: status ? '#cc0a0a' : 'rgb(4, 168, 4)' }">
+  <div class="login_body" :style="bodyStyle">
     <div
-      class="d-flex justify-content-around align-items-center main"
-      :style="{ backgroundColor: status ? '#f56c6c' : 'rgb(158, 253, 186)' }"
+      class="main" :style="mainStyle"
     >
-      <div class="text-center">
+      <div class="text-center ">
         <h3>已經有帳號了</h3>
-        <button class="btn btn-outline-secondary text-white" @click="loginDisplay">登入</button>
+        <button class="text-white loginDisplay" :class="{ 'active': !status }"
+        @click="loginDisplay">登入</button>
       </div>
       <div class="text-center">
         <h3>還沒有帳號?</h3>
-        <button class="btn btn-outline-secondary" @click="registerDisplay">註冊</button>
+        <button class="text-white registerDisplay"  :class="{ 'active': status }"
+        @click="registerDisplay">註冊</button>
       </div>
-      <div class="moveArea position-absolute" :style="[{ left: status ? '45%' : '10%' }]">
+      <div class="moveArea" :style="moveAreaStyle">
         <form class="login_form" :style="loginFormStyle">
           <h1 class="h1">登入</h1>
           <div class="position-relative">
@@ -88,7 +89,7 @@
 
 <script>
 import Swal from 'sweetalert2';
-import { reactive, ref } from 'vue';
+import { reactive, ref, computed } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { initializeApp } from 'firebase/app';
@@ -113,7 +114,6 @@ export default {
     const status = ref(false); // fasle = login  true = register
     const loginFormStyle = reactive({});
     const registerFormStyle = reactive({});
-    // const route = useRoute();
     const firebaseConfig = {
       apiKey: VITE_APIKEY,
       authDomain: VITE_AUTHDOMAIN,
@@ -136,7 +136,6 @@ export default {
           const { expirationTime } = user.stsTokenManager;
           document.cookie = `stockToken=${uid};expires=
             ${new Date(expirationTime)};`;
-          // console.log(user);
           router.push('/');
         })
         .catch((error) => {
@@ -187,6 +186,43 @@ export default {
       registerFormStyle.visibility = 'visible';
       registerFormStyle.transform = 'translateY(-100%) translateX(0%)';
     };
+    const bodyStyle = computed(() => {
+      if (status.value) {
+        return {
+          'background-color': '#cc0a0a',
+        };
+      }
+      return {
+        'background-color': 'rgb(4, 168, 4)',
+      };
+    });
+    const mainStyle = computed(() => {
+      if (status.value) {
+        return {
+          'background-color': '#f56c6c',
+        };
+      }
+      return {
+        'background-color': 'rgb(158, 253, 186)',
+      };
+    });
+
+    const moveAreaStyle = computed(() => {
+      if (window.screen.width > 767) {
+        if (status.value) {
+          return {
+            left: '45%',
+          };
+        }
+        return {
+          left: '10%',
+        };
+      }
+      return {
+        left: 0,
+        width: '100%',
+      };
+    });
     return {
       loginEmail,
       loginPassword,
@@ -199,6 +235,9 @@ export default {
       status,
       loginFormStyle,
       registerFormStyle,
+      bodyStyle,
+      mainStyle,
+      moveAreaStyle,
     };
   },
 };
@@ -213,10 +252,12 @@ export default {
   background-color: rgb(4, 168, 4);
 }
 .main {
-  background-color: rgb(158, 253, 186);
   position: relative;
   min-height: 400px;
   width: 70%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
 }
 .label-text {
   position: absolute;
@@ -241,9 +282,7 @@ export default {
   height: 40px;
   padding: 5px 15px;
 }
-/* .login_form {
-  visibility:visible;
-}*/
+
 .register_form {
   visibility: hidden;
   transform: translateY(-100%) translateX(100%);
@@ -255,6 +294,66 @@ export default {
   overflow: hidden;
   transition: all 0.5s;
   height: 120%;
+  position: absolute;
   background-color: #fff;
+}
+.loginDisplay{
+  border-radius: 10px;
+  border: none;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-right: 25px;
+  padding-left: 25px;
+  background-color: rgb(176, 178, 180);
+}
+.registerDisplay{
+  border-radius: 10px;
+  border: none;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-right: 25px;
+  padding-left: 25px;
+  background-color: rgb(176, 178, 180);
+}
+@media (max-width: 767px) {
+  .main{
+    display: inline-block;
+  }
+  .main>div{
+    display: inline-block;
+    width: 50%;
+  }
+  .main>div button {
+    width: 100%;
+  }
+  .moveArea {
+    top: 0;
+    height: auto;
+    position: relative;
+    width: 100%;
+  }
+  .login_body h3{
+    display: none;
+  }
+  .registerDisplay{
+    border: none;
+    cursor: pointer;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: rgb(176, 178, 180);
+  }
+  .loginDisplay{
+    border: none;
+    cursor: pointer;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: rgb(176, 178, 180);
+  }
+  .loginDisplay.active{
+    background-color:#4ccf57
+  }
+  .registerDisplay.active{
+    background-color:#f36767
+  }
 }
 </style>
