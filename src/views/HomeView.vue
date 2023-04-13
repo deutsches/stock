@@ -167,10 +167,6 @@ export default {
     const isLoading = ref(false);
     const index = ref({});
     const router = useRouter();
-    // const searchListStyle = reactive({
-    //   'd-none': true,
-    //   'position-absolute': false,
-    // });
 
     const stocks = computed(() => {
       if (!search.value) {
