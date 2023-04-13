@@ -138,7 +138,7 @@ import Loading from 'vue-loading-overlay';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import {
-  computed, onMounted, ref, onBeforeUnmount,
+  computed, onMounted, ref, onUnmounted,
 } from 'vue';
 import 'vue-loading-overlay/dist/css/index.css';
 import stockModal from '../components/DetailComponent.vue';
@@ -377,7 +377,7 @@ export default {
       }, 5000);
     });
 
-    onBeforeUnmount(() => {
+    onUnmounted (() => {
       clearInterval(getStoreStock);
     });
 

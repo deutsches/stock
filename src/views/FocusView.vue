@@ -82,7 +82,7 @@
 
 <script type="module">
 import {
-  computed, onMounted, ref, onBeforeUnmount,
+  computed, onMounted, ref, onUnmounted,
 } from 'vue';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -222,7 +222,7 @@ export default {
         getFocusStock();
       }, 5000);
     });
-    onBeforeUnmount(() => {
+    onUnmounted(() => {
       clearInterval(getFocusStock);
     });
     return {
