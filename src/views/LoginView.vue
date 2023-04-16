@@ -1,17 +1,21 @@
 <template>
   <div class="login_body" :style="bodyStyle">
-    <div
-      class="main" :style="mainStyle"
-    >
-      <div class="text-center ">
+    <div class="main" :style="mainStyle">
+      <div class="text-center">
         <h3>已經有帳號了</h3>
-        <button class="text-white loginDisplay" :class="{ 'active': !status }"
-        @click="loginDisplay">登入</button>
+        <button class="text-white loginDisplay" :class="{ active: !status }" @click="loginDisplay">
+          登入
+        </button>
       </div>
       <div class="text-center">
         <h3>還沒有帳號?</h3>
-        <button class="text-white registerDisplay"  :class="{ 'active': status }"
-        @click="registerDisplay">註冊</button>
+        <button
+          class="text-white registerDisplay"
+          :class="{ active: status }"
+          @click="registerDisplay"
+        >
+          註冊
+        </button>
       </div>
       <div class="moveArea" :style="moveAreaStyle">
         <form class="login_form" :style="loginFormStyle">
@@ -139,9 +143,22 @@ export default {
           router.push('/');
         })
         .catch((error) => {
-          const errorCode = error.code;
           const errorMessage = error.message;
-          console.log(errorCode, errorMessage);
+          let message = '';
+          if (errorMessage === 'Firebase: Error (auth/missing-password).') {
+            message = '密碼不可空白!';
+          }
+          if (errorMessage === 'Firebase: Error (auth/invalid-email).') {
+            message = '信箱錯誤!';
+          }
+          if (errorMessage === 'Firebase: Error (auth/wrong-password).') {
+            message = '密碼錯誤!';
+          }
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: message,
+          });
         });
     }
     function loginDisplay() {
@@ -297,7 +314,7 @@ export default {
   position: absolute;
   background-color: #fff;
 }
-.loginDisplay{
+.loginDisplay {
   border-radius: 10px;
   border: none;
   padding-top: 5px;
@@ -306,7 +323,7 @@ export default {
   padding-left: 25px;
   background-color: rgb(176, 178, 180);
 }
-.registerDisplay{
+.registerDisplay {
   border-radius: 10px;
   border: none;
   padding-top: 5px;
@@ -316,14 +333,14 @@ export default {
   background-color: rgb(176, 178, 180);
 }
 @media (max-width: 767px) {
-  .main{
+  .main {
     display: inline-block;
   }
-  .main>div{
+  .main > div {
     display: inline-block;
     width: 50%;
   }
-  .main>div button {
+  .main > div button {
     width: 100%;
   }
   .moveArea {
@@ -332,28 +349,28 @@ export default {
     position: relative;
     width: 100%;
   }
-  .login_body h3{
+  .login_body h3 {
     display: none;
   }
-  .registerDisplay{
+  .registerDisplay {
     border: none;
     cursor: pointer;
     padding-top: 5px;
     padding-bottom: 5px;
     background-color: rgb(176, 178, 180);
   }
-  .loginDisplay{
+  .loginDisplay {
     border: none;
     cursor: pointer;
     padding-top: 5px;
     padding-bottom: 5px;
     background-color: rgb(176, 178, 180);
   }
-  .loginDisplay.active{
-    background-color:#4ccf57
+  .loginDisplay.active {
+    background-color: #4ccf57;
   }
-  .registerDisplay.active{
-    background-color:#f36767
+  .registerDisplay.active {
+    background-color: #f36767;
   }
 }
 </style>

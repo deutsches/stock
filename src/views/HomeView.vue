@@ -4,6 +4,78 @@
     <div class="container">
       <div class="row">
         <div class="position-relative text-md-start text-lg-center">
+          <v-form v-slot="{ errors }" lazy @submit="addStock">
+            <VField
+              type="search"
+              class="input_stock p-2"
+              id="stock_code"
+              name="股票名稱"
+              placeholder="請輸入股票代號或是股票名稱"
+              rules="required"
+              :class="{ 'is-invalid': errors['股票名稱'] }"
+              v-model="search"
+              @blur="clean"
+            >
+            </VField>
+            <ul class="list-unstyled searchList" :class="searchListStyle">
+              <li
+                v-for="stock in stocks"
+                :key="stock.code"
+                @click="inputValue(stock)"
+                @keypress.enter="inputValue(stock)"
+                role="button"
+                :tabIndex="0"
+                :data-code="stock.stockCode"
+                class="p-1"
+              >
+                {{ stock.code + ' ' + stock.name }}
+              </li>
+            </ul>
+            <error-message name="股票名稱" class="text-danger errorMessage"></error-message>
+            <button type="submit" class="ms-2 btn btn-outline-success">加入</button>
+            <div class="row mt-4">
+              <div class="col-6 col-lg-2  offset-lg-4 offset-md-0">
+                <label for="counts" class="d-block">股數&nbsp;</label>
+                <VField
+                  type="number"
+                  class="input p-2"
+                  id="counts"
+                  min="1"
+                  name="股數"
+                  placeholder="請輸入股數"
+                  rules="min_value:1|required"
+                  :class="{ 'is-invalid': errors['股數'] }"
+                  v-model="counts"
+                  aria-label="counts"
+                >
+                </VField>
+                <error-message name="股數" class="text-danger d-block"></error-message>
+              </div>
+              <div class="col-6 col-lg-2">
+                <label for="price" class="d-block">成交價</label>
+                <VField
+                  type="number"
+                  class="input p-2"
+                  id="price"
+                  min="1"
+                  name="成交價"
+                  placeholder="請輸入成交價"
+                  rules="min_value:1|required"
+                  :class="{ 'is-invalid': errors['成交價'] }"
+                  v-model="price"
+                  aria-label="price"
+                >
+                </VField>
+                  <error-message name="成交價" class="text-danger d-block"></error-message>
+              </div>
+
+              </div>
+            <div class="text-md-start text-lg-center mt-4 row row-cols-4">
+            </div>
+          </v-form>
+        </div>
+
+        <!-- <div class="position-relative text-md-start text-lg-center">
           <input
             type="search"
             id="stock_code"
@@ -28,8 +100,8 @@
             </li>
           </ul>
           <button type="button" class="ms-2 btn btn-outline-success" @click="addStock">加入</button>
-        </div>
-        <div class="text-md-start text-lg-center mt-4">
+        </div> -->
+        <!-- <div class="text-md-start text-lg-center mt-4">
           <label for="counts" class="d-inline"
             >股數
             <input
@@ -54,72 +126,80 @@
               class="input p-2"
             />
           </label>
-        </div>
+        </div> -->
       </div>
       <div id="pie" class="mt-5" v-show="store.length"></div>
       <div class="d-md-inline-block d-lg-flex justify-content-around mt-3">
-        <div class=" mb-2 mb-lg-0" :style="{'color':(index?.tse?.updown*1)>0? 'red':'green'}">
+        <div class="mb-2 mb-lg-0" :style="{ color: index?.tse?.updown * 1 > 0 ? 'red' : 'green' }">
           加權指數：{{ index?.tse?.deal }}
-          <span v-if=" (index?.tse?.updown*1)>0"><i class="bi bi-arrow-up"></i></span>
+          <span v-if="index?.tse?.updown * 1 > 0"><i class="bi bi-arrow-up"></i></span>
           <span v-else><i class="bi bi-arrow-down"></i></span>
           {{ index?.tse?.updown }}
           ({{ index?.tse?.change }})
         </div>
-        <div class="mt" :style="{'color':(index?.otc?.updown*1)>0? 'red':'green'}">
+        <div class="mt" :style="{ color: index?.otc?.updown * 1 > 0 ? 'red' : 'green' }">
           櫃買指數：{{ index?.otc?.deal }}
-          <span v-if=" (index?.otc?.updown*1)>0"><i class="bi bi-arrow-up"></i></span>
+          <span v-if="index?.otc?.updown * 1 > 0"><i class="bi bi-arrow-up"></i></span>
           <span v-else><i class="bi bi-arrow-down"></i></span>
           {{ index?.otc?.updown }}
           ({{ index?.otc?.change }})
         </div>
       </div>
-      <div class=" table-responsive">
+      <div class="table-responsive">
         <table class="table mt-4" v-show="store.length">
-        <thead>
-          <tr>
-            <td>名稱</td>
-            <td>股數</td>
-            <td>成交價</td>
-            <td>現價</td>
-            <td>損益</td>
-            <td>幅度</td>
-            <td></td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="stock in store" :key="stock.code">
-            <td>{{ stock.name }}</td>
-            <td>{{ moneyFormat(stock.counts + '') }}</td>
-            <td>{{ stock.price }}</td>
-            <td>{{ stock.dealPrice }}</td>
-            <td style="color:{{ stock.profit < 0 ? green : red }}">
-              {{ moneyFormat(stock.profit + '') }}
-            </td>
-            <td style="color:{{ stock.profit < 0 ? green : red }}">{{ stock.change }}</td>
-            <td>
-              <button type="button" class="btn btn-outline-success" @click="openDetail(stock.code)">
-                明細
-              </button>
-              &nbsp;
-              <button type="button" class="btn btn-outline-danger" @click="deleteStock(stock.code)">
-                刪除
-              </button>
-            </td>
-          </tr>
-        </tbody>
-        <tfoot>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>總損益<br />{{ moneyFormat(total + '') }}</td>
-            <!-- <td>報酬率</td> -->
-            <td>報酬率<br />{{ ROI }}</td>
-            <td></td>
-          </tr>
-        </tfoot>
-      </table>
+          <thead>
+            <tr>
+              <td>名稱</td>
+              <td>股數</td>
+              <td>成交價</td>
+              <td>現價</td>
+              <td>損益</td>
+              <td>幅度</td>
+              <td></td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="stock in store" :key="stock.code">
+              <td>{{ stock.name }}</td>
+              <td>{{ moneyFormat(stock.counts + '') }}</td>
+              <td>{{ stock.price }}</td>
+              <td>{{ stock.dealPrice }}</td>
+              <td style="color:{{ stock.profit < 0 ? green : red }}">
+                {{ moneyFormat(stock.profit + '') }}
+              </td>
+              <td style="color:{{ stock.profit < 0 ? green : red }}">{{ stock.change }}</td>
+              <td>
+                <button
+                  type="button"
+                  class="btn btn-outline-success"
+                  @click="openDetail(stock.code)"
+                >
+                  明細
+                </button>
+                &nbsp;
+                <button
+                  type="button"
+                  class="btn btn-outline-danger"
+                  @click="deleteStock(stock.code)"
+                >
+                  刪除
+                </button>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>總損益<br />{{ moneyFormat(total + '') }}</td>
+              <!-- <td>報酬率</td> -->
+              <td>報酬率<br />{{ ROI }}</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
       </div>
     </div>
   </main>
@@ -134,12 +214,12 @@
 
 <script type="module">
 import { useRouter } from 'vue-router';
-import Loading from 'vue-loading-overlay';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import {
   computed, onMounted, ref, onUnmounted,
 } from 'vue';
+import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/css/index.css';
 import stockModal from '../components/DetailComponent.vue';
 
@@ -237,41 +317,47 @@ export default {
       const code = stockData.value.filter(
         (item) => item.name.match(search.value) || item.code.match(search.value),
       );
-
-      const data = {
-        code: code[0].code,
-        name: code[0].name,
-        counts: counts.value,
-        price: price.value,
-        token: token.value,
-        stockCode: code[0].stockCode,
-        uid: Date.parse(new Date()),
-        profit: 0,
-        dealPrice: 0,
-        change: '',
-      };
-      axios
-        .post(`${VITE_URL}api/stock/addStock`, data)
-        .then((res) => {
-          if (res.data.success) {
-            Swal.fire({
-              title: '加入完成!',
-              icon: 'success',
-              showConfirmButton: false,
-              timer: 1500,
-            });
-            getStoreStock();
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          // alert(err.data);
+      if (code.length === 0) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: '沒有該個股資料!',
         });
+      } else {
+        const data = {
+          code: code[0].code,
+          name: code[0].name,
+          counts: counts.value,
+          price: price.value,
+          token: token.value,
+          stockCode: code[0].stockCode,
+          uid: Date.parse(new Date()),
+          profit: 0,
+          dealPrice: 0,
+          change: '',
+        };
+        axios
+          .post(`${VITE_URL}api/stock/addStock`, data)
+          .then((res) => {
+            if (res.data.success) {
+              Swal.fire({
+                title: '加入完成!',
+                icon: 'success',
+                showConfirmButton: false,
+                timer: 1500,
+              });
+              getStoreStock();
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+            // alert(err.data);
+          });
 
-      search.value = '';
-      counts.value = 1;
-      price.value = 1;
-      console.log(stockModal.value);
+        search.value = '';
+        counts.value = 1;
+        price.value = 1;
+      }
     };
     function clean() {
       const temp = search.value;
@@ -372,7 +458,6 @@ export default {
         getStoreStock();
       }, 5000);
     });
-
     onUnmounted(() => {
       clearInterval(timer.value);
     });
@@ -431,20 +516,29 @@ export default {
   z-index: 10;
   left: 37%;
 }
+.errorMessage {
+  position: absolute;
+  left: 38%;
+  top: 30%;
+}
 @media (max-width: 992px) {
   .input_stock {
     width: 75%;
   }
   .input {
-    width: 35%;
+    width: 100%;
   }
   .searchList {
     left: 3%;
   }
 }
 @media (max-width: 767px) {
-  .table{
+  .table {
     width: 600px !important;
+  }
+  .errorMessage{
+    top: 30%;
+    left: 3%;
   }
 }
 </style>
