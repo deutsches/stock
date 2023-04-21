@@ -229,6 +229,7 @@ export default {
     Loading,
   },
   setup() {
+    const stockModal = ref();
     const { VITE_URL } = import.meta.env;
     const search = ref('');
     const counts = ref(1);
@@ -455,7 +456,13 @@ export default {
       isLoading.value = true;
       timer.value = setInterval(() => {
         // 每5秒鐘執行一次
-        getStoreStock();
+        const now = Date.parse(new Date());
+        const beginTime = Date.parse(`${new Date().getFullYear()}/${new Date().getMonth()}/${new Date().getDate()} 09:00:00`);
+        const endTime = Date.parse(`${new Date().getFullYear()}/${new Date().getMonth()}/${new Date().getDate()} 13:30:00`);
+
+        if (now >= beginTime && now <= endTime) {
+          getStoreStock();
+        }
       }, 5000);
     });
     onUnmounted(() => {
@@ -483,7 +490,6 @@ export default {
       getStocks,
       stockCode,
       getStoreStock,
-      // updateStoreStockPrice,
       moneyFormat,
       codeDetail,
       getStockDetail,

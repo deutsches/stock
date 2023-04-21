@@ -55,7 +55,8 @@
               <td>現價</td>
               <td>漲跌</td>
               <td>幅度</td>
-              <td></td>
+              <td width="150"></td>
+              <td width="150"></td>
             </tr>
           </thead>
           <tbody>
@@ -67,8 +68,17 @@
               <td>
                 <button
                   type="button"
+                  class="btn btn-outline-success"
+                  @click="updateStockPrice(stock)"
+                >
+                  設定警示價格
+                </button>
+              </td>
+              <td>
+                <button
+                  type="button"
                   class="btn btn-outline-danger"
-                  @click="deleteStock(stock.code)"
+                  @click="deleteStock(stock?.code)"
                 >
                   刪除
                 </button>
@@ -230,13 +240,56 @@ export default {
         }
       });
     };
+    function updateStockPrice(stock) {
+      console.log(stock);
+      Swal.fire({
+        title: '設定要警示的價格',
+        input: 'text',
+        inputValue: stock.notice.dealPrice,
+        showCancelButton: true,
+        confirmButtonText: '確認',
+        cancelButtonText: '取消',
+        showLoaderOnConfirm: true,
+        preConfirm: (dealPrice) => {
+          axios
+            .post(`${VITE_URL}api/focus/updateNoticePrice?code=${stock.code}&dealPrice=${dealPrice}`)
+            .then((res) => {
+              if (res.data.success) {
+                Swal.fire({
+                  title: '已設定完成!',
+                  icon: 'success',
+                  showConfirmButton: false,
+                  timer: 1500,
+                });
+                getFocusStock();
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        },
+        allowOutsideClick: () => !Swal.isLoading(),
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: '設定完成!',
+          });
+        }
+      });
+    }
     onMounted(() => {
       getStocks();
       getFocusStock();
       isLoading.value = true;
       timer.value = setInterval(() => {
         // 每5秒鐘執行一次
-        getFocusStock();
+        const now = Date.parse(new Date());
+        const beginTime = Date.parse(`${new Date().getFullYear()}/${new Date().getMonth()}/${new Date().getDate()} 09:00:00`);
+        const endTime = Date.parse(`${new Date().getFullYear()}/${new Date().getMonth()}/${new Date().getDate()} 13:30:00`);
+
+        if (now >= beginTime && now <= endTime) {
+          getFocusStock();
+        }
       }, 5000);
     });
     onUnmounted(() => {
@@ -254,6 +307,7 @@ export default {
       deleteStock,
       index,
       isLoading,
+      updateStockPrice,
     };
   },
 };
