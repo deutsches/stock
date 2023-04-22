@@ -1,7 +1,11 @@
+## 即時股市資訊 網站Demo
+
+https://deutsches.github.io/stock/
+
 ## 設計概念
 
-在不開啟證券app情況下，還是能夠隨時關注自選股和庫存股。再次練習Vue3之外，也自己練習也順便股票價格因為是串接證交所的資料，怕api一直抓取會被阻擋，所以目前設定每五秒抓取一次證交所的api
-
+嘗試在不開啟證券app情況下，還是能夠隨時關注自選股和庫存股。除了再次練習Vue3 Composition API之外，也練習NodeJS自行撰寫API，
+由於股票價格是撈取證交所的資料，怕一直撈取會被擋IP，所以目前是設定每5秒更新一次價格。
 
 ## 專案說明
 
@@ -9,12 +13,9 @@
 - 引入Vue Axios和 Vue Router等套件
 - 加入Eslint Airbnb
 - 使用Vue Composition API
-- 使用NodeJS 架設API
+- 使用NodeJS 架設API(用 Render.com)
 
-## 網站Demo
-
-https://deutsches.github.io/stock/
-
+## API Code
 https://github.com/deutsches/stock_API (API程式碼)
 
 ## 使用技術
