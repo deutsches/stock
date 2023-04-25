@@ -34,7 +34,7 @@ https://github.com/deutsches/stock_API (API程式碼)
 
 ## 註冊
 
-第一次使用要先註冊，如果要測試價格警示功能需註冊能收信的email
+第一次使用要先註冊，如果要測試價格警示功能需註冊能收信的email(由於後端的系統是註冊在render.com，太久沒使用系統會進入休眠模式需要等待一小段時間讓系統恢復)
 
 ![image](https://user-images.githubusercontent.com/23115087/232695298-f79355d2-b411-4a31-9b77-029e17e8690b.png)
 
