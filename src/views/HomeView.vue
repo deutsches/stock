@@ -28,6 +28,7 @@
                 :tabIndex="0"
                 :data-code="stock.stockCode"
                 v-show="showList"
+                class="p-1"
               >
                 {{ stock.code + ' ' + stock.name }}
               </li>
