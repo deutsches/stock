@@ -3,7 +3,7 @@
   <main>
     <div class="container">
       <div class="row">
-        <div class="position-relative text-center">
+        <div class="position-relative text-center p-2">
           <input
             type="search"
             id="stock_code"
@@ -12,9 +12,9 @@
             placeholder="請輸入股票代號或是股票名稱"
             class="input_stock p-2"
           />
+          <button type="button" class="ms-2 btn btn-outline-success" @click="addStock">加入</button>
           <ul
-            class="list-unstyled searchList"
-            :class="{ 'd-none': !stocks.length, 'position-absolute': stocks.length }"
+            class="list-unstyled searchList position-absolute"
           >
             <li
               v-for="stock in stocks"
@@ -23,12 +23,12 @@
               @keypress.enter="inputValue(stock)"
               role="button"
               :tabIndex="0"
+              v-show="showList"
               class="p-1"
             >
               {{ stock.code + ' ' + stock.name }}
             </li>
           </ul>
-          <button type="button" class="ms-2 btn btn-outline-success" @click="addStock">加入</button>
         </div>
       </div>
       <div class="d-md-inline-block d-lg-flex justify-content-around mt-3">
@@ -93,7 +93,7 @@
 
 <script type="module">
 import {
-  computed, onMounted, ref, onUnmounted,
+  computed, onMounted, ref, onUnmounted, watch,
 } from 'vue';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -114,6 +114,8 @@ export default {
     const stockData = ref([]);
     const { VITE_URL } = import.meta.env;
     const index = ref({});
+    const showList = ref(false);
+
     const stocks = computed(() => {
       if (!search.value) {
         return '';
@@ -122,10 +124,12 @@ export default {
         (item) => item.name.match(search.value) || item.code.match(search.value),
       );
     });
-
+    watch(() => stocks.value, () => {
+      showList.value = true;
+    });
     function inputValue(stock) {
       search.value = `${stock.code}`;
-      stocks.value.length = 0;
+      showList.value = false;
     }
 
     // 取得關注股
@@ -176,7 +180,7 @@ export default {
         axios
           .post(`${VITE_URL}api/focus/addStock`, data)
           .then((res) => {
-            if (res.success) {
+            if (res.data.success) {
               Swal.fire({
                 title: '加入完成!',
                 icon: 'success',
@@ -308,6 +312,7 @@ export default {
       index,
       isLoading,
       updateStockPrice,
+      showList,
     };
   },
 };
@@ -334,7 +339,7 @@ export default {
     width: 75%;
   }
   .searchList {
-    left: 5%;
+    left: 4%;
   }
 }
 </style>

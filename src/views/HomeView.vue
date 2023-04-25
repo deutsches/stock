@@ -3,7 +3,7 @@
   <main>
     <div class="container">
       <div class="row">
-        <div class="position-relative text-md-start text-lg-center">
+        <div class="position-relative text-center p-2">
           <v-form v-slot="{ errors }" lazy @submit="addStock">
             <VField
               type="search"
@@ -17,7 +17,8 @@
               @blur="clean"
             >
             </VField>
-            <ul class="list-unstyled searchList" :class="searchListStyle">
+            <button type="submit" class="ms-2 btn btn-outline-success">加入</button>
+            <ul class="list-unstyled searchList position-absolute">
               <li
                 v-for="stock in stocks"
                 :key="stock.code"
@@ -26,16 +27,15 @@
                 role="button"
                 :tabIndex="0"
                 :data-code="stock.stockCode"
-                class="p-1"
+                v-show="showList"
               >
                 {{ stock.code + ' ' + stock.name }}
               </li>
             </ul>
             <error-message name="股票名稱" class="text-danger errorMessage"></error-message>
-            <button type="submit" class="ms-2 btn btn-outline-success">加入</button>
             <div class="row mt-4">
               <div class="col-6 col-lg-2  offset-lg-4 offset-md-0">
-                <label for="counts" class="d-block">股數&nbsp;</label>
+                <label for="counts" class="d-block mb-1">股數&nbsp;</label>
                 <VField
                   type="number"
                   class="input p-2"
@@ -52,7 +52,7 @@
                 <error-message name="股數" class="text-danger d-block"></error-message>
               </div>
               <div class="col-6 col-lg-2">
-                <label for="price" class="d-block">成交價</label>
+                <label for="price" class="d-block mb-1">成交價</label>
                 <VField
                   type="number"
                   class="input p-2"
@@ -217,7 +217,7 @@ import { useRouter } from 'vue-router';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import {
-  computed, onMounted, ref, onUnmounted,
+  computed, onMounted, ref, onUnmounted, watch,
 } from 'vue';
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/css/index.css';
@@ -249,6 +249,7 @@ export default {
     const index = ref({});
     const router = useRouter();
     const timer = ref(null);
+    const showList = ref(false);
     const stocks = computed(() => {
       if (!search.value) {
         return '';
@@ -257,22 +258,12 @@ export default {
         (item) => item.name.match(search.value) || item.code.match(search.value),
       );
     });
-    const searchListStyle = computed(() => {
-      if (stocks.value.length > 0) {
-        return {
-          'd-none': false,
-          'position-absolute': true,
-        };
-      }
-      return {
-        'd-none': true,
-        'position-absolute': false,
-      };
+    watch(() => stocks.value, () => {
+      showList.value = true;
     });
     function inputValue(code) {
       search.value = `${code.code}`;
-      searchListStyle.value['position-absolute'] = false;
-      searchListStyle.value['d-none'] = true;
+      showList.value = false;
     }
 
     // 圓餅圖
@@ -478,7 +469,7 @@ export default {
       addStock,
       list,
       store,
-      searchListStyle,
+      showList,
       clean,
       deleteStock,
       openDetail,
@@ -529,13 +520,13 @@ export default {
 }
 @media (max-width: 992px) {
   .input_stock {
-    width: 75%;
+    width: 70%;
   }
   .input {
     width: 100%;
   }
   .searchList {
-    left: 3%;
+    left: 0%;
   }
 }
 @media (max-width: 767px) {
