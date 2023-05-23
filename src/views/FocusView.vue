@@ -288,8 +288,8 @@ export default {
       timer.value = setInterval(() => {
         // 每5秒鐘執行一次
         const now = Date.parse(new Date());
-        const beginTime = Date.parse(`${new Date().getFullYear()}/${new Date().getMonth()}/${new Date().getDate()} 09:00:00`);
-        const endTime = Date.parse(`${new Date().getFullYear()}/${new Date().getMonth()}/${new Date().getDate()} 13:30:00`);
+        const beginTime = Date.parse(`${new Date().getFullYear()}/${new Date().getMonth()+1}/${new Date().getDate()} 09:00:00`);
+        const endTime = Date.parse(`${new Date().getFullYear()}/${new Date().getMonth()+1}/${new Date().getDate()} 13:30:00`);
 
         if (now >= beginTime && now <= endTime) {
           getFocusStock();
