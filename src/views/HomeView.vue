@@ -288,7 +288,6 @@ export default {
       axios
         .post(`${VITE_URL}api/stock/getStoreStock`)
         .then((res) => {
-          console.log(res);
           if (res.data.resultArray.length !== 0) {
             store.value = res.data.resultArray;
             total.value = res.data.total;
