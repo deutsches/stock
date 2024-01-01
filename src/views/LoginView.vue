@@ -139,7 +139,6 @@ export default {
           const { uid } = user;
           const { expirationTime } = user.stsTokenManager;
           document.cookie = `stockToken=${uid};expires=${new Date(expirationTime)};`;
-          console.log('document1',document.cookie);
           router.push('/');
         })
         .catch((error) => {

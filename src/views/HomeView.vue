@@ -284,7 +284,6 @@ export default {
         /(?:(?:^|.*;\s*)stockToken\s*=\s*([^;]*).*$)|^.*$/,
         '$1',
       );
-      console.log('document2',document.cookie);
       axios.defaults.headers.common.Authorization = token.value;
       axios
         .post(`${VITE_URL}api/stock/getStoreStock`)
