@@ -55,7 +55,7 @@
               <td>現價</td>
               <td>漲跌</td>
               <td>幅度</td>
-              <td width="150"></td>
+              <!-- <td width="150"></td> -->
               <td width="150"></td>
             </tr>
           </thead>
@@ -66,13 +66,13 @@
               <td>{{ stock.updown }}</td>
               <td>{{ stock.change }}</td>
               <td>
-                <button
+                <!-- <button
                   type="button"
                   class="btn btn-outline-success"
                   @click="updateStockPrice(stock)"
                 >
                   設定警示價格
-                </button>
+                </button> -->
               </td>
               <td>
                 <button
@@ -244,43 +244,44 @@ export default {
         }
       });
     };
-    function updateStockPrice(stock) {
-      console.log(stock);
-      Swal.fire({
-        title: '設定要警示的價格',
-        input: 'text',
-        inputValue: stock.notice.dealPrice,
-        showCancelButton: true,
-        confirmButtonText: '確認',
-        cancelButtonText: '取消',
-        showLoaderOnConfirm: true,
-        preConfirm: (dealPrice) => {
-          axios
-            .post(`${VITE_URL}api/focus/updateNoticePrice?code=${stock.code}&dealPrice=${dealPrice}`)
-            .then((res) => {
-              if (res.data.success) {
-                Swal.fire({
-                  title: '已設定完成!',
-                  icon: 'success',
-                  showConfirmButton: false,
-                  timer: 1500,
-                });
-                getFocusStock();
-              }
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        },
-        allowOutsideClick: () => !Swal.isLoading(),
-      }).then((result) => {
-        if (result.isConfirmed) {
-          Swal.fire({
-            title: '設定完成!',
-          });
-        }
-      });
-    }
+    // 取消警示價格
+    // function updateStockPrice(stock) {
+    //   console.log(stock);
+    //   Swal.fire({
+    //     title: '設定要警示的價格',
+    //     input: 'text',
+    //     inputValue: stock.notice.dealPrice,
+    //     showCancelButton: true,
+    //     confirmButtonText: '確認',
+    //     cancelButtonText: '取消',
+    //     showLoaderOnConfirm: true,
+    //     preConfirm: (dealPrice) => {
+    //       axios
+    //         .post(`${VITE_URL}api/focus/updateNoticePrice?code=${stock.code}&dealPrice=${dealPrice}`)
+    //         .then((res) => {
+    //           if (res.data.success) {
+    //             Swal.fire({
+    //               title: '已設定完成!',
+    //               icon: 'success',
+    //               showConfirmButton: false,
+    //               timer: 1500,
+    //             });
+    //             getFocusStock();
+    //           }
+    //         })
+    //         .catch((err) => {
+    //           console.log(err);
+    //         });
+    //     },
+    //     allowOutsideClick: () => !Swal.isLoading(),
+    //   }).then((result) => {
+    //     if (result.isConfirmed) {
+    //       Swal.fire({
+    //         title: '設定完成!',
+    //       });
+    //     }
+    //   });
+    // }
     onMounted(() => {
       getStocks();
       getFocusStock();
