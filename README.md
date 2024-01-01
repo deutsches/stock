@@ -85,13 +85,6 @@ https://github.com/deutsches/stock_API (API程式碼)
 ![image](https://user-images.githubusercontent.com/23115087/232693124-7d34b128-e0bf-4ef5-93c3-cc189394b117.png)
 
 
-價格警示功能
-
-![image](https://user-images.githubusercontent.com/23115087/232691078-afce685b-8084-4412-97a8-8a2794bad80c.png)
-
-當成交價等於警示價格就會寄信通知user
-
-![image](https://user-images.githubusercontent.com/23115087/232690846-710e84ad-58d4-4368-801e-6e67b227fb7d.png)
 
 
 
